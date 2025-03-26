@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/utils/supabase/client";
 
-interface MaterialRow {
+export interface MaterialRow {
   id: number;
   material: string; // original property (e.g., the internal identifier)
   name: string; // display name for history insert

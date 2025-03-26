@@ -11,11 +11,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import EditMaterial, { Material } from "./EditMaterial";
+import EditMaterial, { MaterialRow } from "./editMaterial";
+
 
 interface EditMaterialDialogProps {
-  material: Material;
-  onMaterialUpdated: (updatedMaterial: Material) => void;
+  material: MaterialRow;
+  onMaterialUpdated: (updatedMaterial: MaterialRow) => void;
 }
 
 export default function EditMaterialDialog({
