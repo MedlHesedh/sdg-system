@@ -28,7 +28,7 @@ export function TrainingDialog({ open, onOpenChange }: TrainingDialogProps) {
   const { toast } = useToast()
 
   const trainModel = () =>{
-    fetch("http://127.0.0.1:5000/train")
+    fetch("https://sdg-arima.onrender.com/train")
       .then((response) => response.json())
       .then((data) => {
         console.log(data)

@@ -131,7 +131,7 @@ export function MaterialLaborTable({
       steps: targetDateInMonths.toString()
     });
 
-    fetch(`http://127.0.0.1:5000/predict?${params}`)
+    fetch(`https://sdg-arima.onrender.com/predict?${params}`)
       .then(response => response.json())
       .then(data => {
         console.log(data.forecast);
