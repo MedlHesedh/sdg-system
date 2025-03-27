@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/utils/supabase/server";
 
+
 // PATCH /api/maintenance/[id] - Update a maintenance schedule
 export async function PATCH(
   request: NextRequest,
