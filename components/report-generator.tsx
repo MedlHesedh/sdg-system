@@ -34,10 +34,11 @@ export function ReportGenerator({ forecastResults }: ReportGeneratorProps) {
     setIsGenerating(true)
     setGenerationProgress(0)
     setGenerationError(null)
+    let interval: NodeJS.Timeout | undefined = undefined
 
     try {
       // Simulate progress
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setGenerationProgress((prev) => {
           if (prev >= 95) {
             clearInterval(interval)
@@ -81,7 +82,7 @@ export function ReportGenerator({ forecastResults }: ReportGeneratorProps) {
         })
       }, 500)
     } catch (error) {
-      clearInterval()
+      clearInterval(interval)
       setGenerationError(error instanceof Error ? error.message : "Failed to generate report")
       setIsGenerating(false)
     }

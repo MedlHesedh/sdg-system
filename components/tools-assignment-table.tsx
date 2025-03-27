@@ -143,16 +143,13 @@ export function ToolsAssignmentTable({
           .map((assignment) => {
             const toolSerial = assignment.tool_serial_numbers;
             if (!toolSerial) return null;
-            const tool =
-              Array.isArray(toolSerial.tools) && toolSerial.tools.length > 0
-                ? toolSerial.tools[0]
-                : toolSerial.tools;
+            const tool = toolSerial?.[0]?.tools?.[0];
             if (!tool) return null;
             return {
               id: tool.id,
               name: tool.name,
-              serialNumber: toolSerial.serial_number,
-              status: toolSerial.status as
+              serialNumber: toolSerial[0].serial_number,
+              status: toolSerial[0].status as
                 | "Available"
                 | "Not Available"
                 | "Under Maintenance",

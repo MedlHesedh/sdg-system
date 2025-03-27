@@ -30,10 +30,11 @@ export function ModelTraining({ data, onModelTrained }: ModelTrainingProps) {
     setIsTraining(true)
     setTrainingProgress(0)
     setTrainingError(null)
+    let interval: NodeJS.Timeout | undefined = undefined
 
     try {
       // Simulate progress
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setTrainingProgress((prev) => {
           if (prev >= 95) {
             clearInterval(interval)
@@ -79,7 +80,7 @@ export function ModelTraining({ data, onModelTrained }: ModelTrainingProps) {
         setIsTraining(false)
       }, 500)
     } catch (error) {
-      clearInterval()
+      clearInterval(interval)
       setTrainingError(error instanceof Error ? error.message : "Failed to train model")
       setIsTraining(false)
     }

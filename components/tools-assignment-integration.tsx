@@ -198,7 +198,7 @@ export function useToolsAssignmentIntegration() {
       const { data: serialNumbers, error: fetchSerialError } = await supabase
         .from("tool_serial_numbers")
         .select("status")
-        .eq("tool_id", currentAssignment.tool_serial_numbers.tool_id) // Fix the access to tool_id
+        .eq("tool_id", currentAssignment.tool_serial_numbers[0].tool_id)
 
       if (fetchSerialError) throw fetchSerialError
 
@@ -209,7 +209,7 @@ export function useToolsAssignmentIntegration() {
         const { error: toolUpdateError } = await supabase
           .from("tools")
           .update({ status: "Available" })
-          .eq("id", currentAssignment.tool_serial_numbers.tool_id) // Fix the access to tool_id
+          .eq("id", currentAssignment.tool_serial_numbers[0].tool_id)
 
         if (toolUpdateError) throw toolUpdateError
       }
