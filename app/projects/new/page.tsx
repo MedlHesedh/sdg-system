@@ -33,7 +33,7 @@ export default function NewProjectPage() {
       
       {/* Main content */}
       <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold tracking-tight mb-8">Create New Project</h1>
+        {/* <h1 className="text-3xl font-bold tracking-tight mb-8">Create New Project</h1> */}
         <ProjectForm />
       </div>
     </SidebarInset>

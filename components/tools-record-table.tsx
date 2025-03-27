@@ -858,7 +858,7 @@ export function ToolsRecordTable() {
             </SheetDescription>
           </SheetHeader>
           {selectedTool && (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 p-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-tool-name">Tool Name</Label>
                 <Input

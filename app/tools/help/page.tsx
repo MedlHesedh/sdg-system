@@ -27,12 +27,6 @@ export default function ToolScanHelpPage() {
         </div>
       </header>
       <div className="container mx-auto py-10">
-        <div className="container py-10 max-w-3xl">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">Tool QR Code Scanning Guide</h1>
-            <p className="text-muted-foreground mt-1">Learn how to use QR codes to manage your construction tools</p>
-          </div>
-
           <Tabs defaultValue="overview" className="space-y-6">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -226,7 +220,7 @@ export default function ToolScanHelpPage() {
               </Card>
             </TabsContent>
           </Tabs>
-        </div>
+        
       </div>
     </SidebarInset>
   )
