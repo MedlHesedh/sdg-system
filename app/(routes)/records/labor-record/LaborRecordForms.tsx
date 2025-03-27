@@ -114,34 +114,34 @@ export function DataTable({
   });
 
   // If loading, show a skeleton table
-  if (loading) {
-    return (
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns.map((col) => (
-                <TableHead key={col.id || col.accessorKey}>
-                  <Skeleton className="h-6 w-24" />
-                </TableHead>
+if (loading) {
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((col, colIndex) => (
+              <TableHead key={col.id || `col-${colIndex}`}>
+                <Skeleton className="h-6 w-24" />
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 3 }).map((_, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {columns.map((_, colIndex) => (
+                <TableCell key={colIndex}>
+                  <Skeleton className="h-4 w-full" />
+                </TableCell>
               ))}
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 3 }).map((_, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {columns.map((_, colIndex) => (
-                  <TableCell key={colIndex}>
-                    <Skeleton className="h-4 w-full" />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    );
-  }
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
 
   // Called when a new labor entry is successfully added
   const handleLaborAdded = () => {
