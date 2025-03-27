@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/utils/supabase/server";
 
-
 // PATCH /api/maintenance/[id] - Update a maintenance schedule
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Parse the request body
     const body = await request.json();
     const { status } = body;
+    const { id } = await params;
 
     if (!status) {
       return NextResponse.json(
@@ -30,7 +30,7 @@ export async function PATCH(
         tool_serial_numbers(id, serial_number, status)
       `
       )
-      .eq("id", context.params.id)
+      .eq("id", id)
       .single();
 
     if (fetchError || !currentSchedule) {
@@ -42,7 +42,7 @@ export async function PATCH(
     const { data: schedule, error: scheduleError } = await supabase
       .from("maintenance_schedules")
       .update({ status })
-      .eq("id", context.params.id)
+      .eq("id", id)
       .select()
       .single();
 
@@ -169,7 +169,7 @@ export async function PATCH(
 
     return NextResponse.json({ schedule });
   } catch (error) {
-    console.error(`Error updating maintenance schedule ${context.params.id}:`, error);
+    console.error(`Error updating maintenance schedule:`, error);
     return NextResponse.json(
       { error: "Failed to update maintenance schedule" },
       { status: 500 }

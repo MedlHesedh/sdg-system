@@ -2,8 +2,9 @@ import { NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/utils/supabase/server"
 
 // GET /api/tools/[id] - Get a specific tool
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase
@@ -12,7 +13,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         *,
         tool_serial_numbers(*)
       `)
-      .eq("id", params.id)
+      .eq("id", id)
       .single()
 
     if (error) {
@@ -21,14 +22,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ tool: data })
   } catch (error) {
-    console.error(`Error fetching tool ${params.id}:`, error)
+    console.error(`Error fetching tool:`, error)
     return NextResponse.json({ error: "Failed to fetch tool" }, { status: 500 })
   }
 }
 
 // PATCH /api/tools/[id] - Update a tool
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { name, quantity, status, condition_notes, last_maintenance, serial_numbers } = body
 
@@ -44,7 +46,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         condition_notes,
         last_maintenance,
       })
-      .eq("id", params.id)
+      .eq("id", id)
       .select()
       .single()
 
@@ -56,7 +58,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const { data: existingSerialNumbers, error: fetchError } = await supabase
       .from("tool_serial_numbers")
       .select("id, serial_number")
-      .eq("tool_id", params.id)
+      .eq("tool_id", id)
 
     if (fetchError) {
       throw fetchError
@@ -81,7 +83,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     // Add new serial numbers
     if (newSerialNumbers.length > 0) {
       const serialNumbersToInsert = newSerialNumbers.map((serialNumber: string) => ({
-        tool_id: params.id,
+        tool_id: id,
         serial_number: serialNumber,
         status,
       }))
@@ -97,7 +99,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const { error: updateError } = await supabase
       .from("tool_serial_numbers")
       .update({ status })
-      .eq("tool_id", params.id)
+      .eq("tool_id", id)
       .not("id", "in", toDelete)
 
     if (updateError) {
@@ -111,7 +113,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         *,
         tool_serial_numbers(*)
       `)
-      .eq("id", params.id)
+      .eq("id", id)
       .single()
 
     if (fetchUpdatedError) {
@@ -120,8 +122,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     return NextResponse.json({ tool: updatedTool })
   } catch (error) {
-    console.error(`Error updating tool ${params.id}:`, error)
+    console.error(`Error updating tool:`, error)
     return NextResponse.json({ error: "Failed to update tool" }, { status: 500 })
   }
 }
-

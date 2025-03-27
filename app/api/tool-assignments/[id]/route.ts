@@ -2,8 +2,9 @@ import { NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/utils/supabase/server"
 
 // PATCH /api/tool-assignments/[id] - Update a tool assignment (e.g., mark as returned)
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { status, return_date } = body
 
@@ -16,7 +17,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         *,
         tool_serial_numbers(id, tool_id)
       `)
-      .eq("id", params.id)
+      .eq("id", id)
       .single()
 
     if (fetchError) {
@@ -32,7 +33,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const { data: assignment, error: assignmentError } = await supabase
       .from("tool_assignments")
       .update(updateData)
-      .eq("id", params.id)
+      .eq("id", id)
       .select()
       .single()
 
@@ -78,8 +79,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     return NextResponse.json({ assignment })
   } catch (error) {
-    console.error(`Error updating tool assignment ${params.id}:`, error)
+    console.error(`Error updating tool assignment:`, error)
     return NextResponse.json({ error: "Failed to update tool assignment" }, { status: 500 })
   }
 }
-
