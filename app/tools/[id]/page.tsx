@@ -7,11 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export default async function ToolDetailPage({ params }: { params: { id: string } }) {
+export default async function ToolDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  
   return (
     <div className="container py-10 max-w-2xl">
       <Suspense fallback={<ToolDetailSkeleton />}>
-        <ToolDetail id={params.id} />
+        <ToolDetail id={id} />
       </Suspense>
     </div>
   )
@@ -209,4 +211,3 @@ function ToolDetailSkeleton() {
     </>
   )
 }
-
