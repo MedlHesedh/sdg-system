@@ -85,7 +85,7 @@ export default function MaterialRecordPage() {
               <TableHeader>
                 <TableRow>
                   {columns.map((col) => (
-                    <TableHead key={col.accessorKey || col.id}>
+                    <TableHead key={col.id}>
                       <Skeleton className="h-6 w-24" />
                     </TableHead>
                   ))}
