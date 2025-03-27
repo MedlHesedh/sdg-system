@@ -1,8 +1,11 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/utils/supabase/server"
 
 // PATCH /api/maintenance/[id] - Update a maintenance schedule
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const body = await request.json()
     const { status } = body
