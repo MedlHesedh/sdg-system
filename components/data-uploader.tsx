@@ -222,7 +222,7 @@ export function DataUploader({ onDataUploaded }: DataUploaderProps) {
                         <tr key={rowIndex} className="border-t">
                           {Object.values(row).map((cell, cellIndex) => (
                             <td key={cellIndex} className="whitespace-nowrap px-4 py-2">
-                              {cell}
+                              {String(cell)}
                             </td>
                           ))}
                         </tr>
