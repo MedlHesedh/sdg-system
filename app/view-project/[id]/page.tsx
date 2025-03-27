@@ -362,12 +362,12 @@ export default function ViewProject() {
                     View Project Plan
                   </Button>
                 </Link>
-                {project.status !== "Completed" && (
+               {/* {project.status !== "Completed" && (
                   <Button variant="outline" className="w-full">
                     <Calendar className="h-4 w-4 mr-2" />
                     Schedule Meeting
                   </Button>
-                )}
+                )} */}
               </div>
             </CardContent>
           </Card>

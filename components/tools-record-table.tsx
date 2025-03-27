@@ -247,6 +247,37 @@ export function ToolsRecordTable() {
   const handleUpdateTool = async () => {
     if (!selectedTool) return;
     try {
+      // Get existing serial numbers from database
+      const { data: existingSerialNumbers, error: fetchError } = await supabase
+        .from("tool_serial_numbers")
+        .select("id, serial_number")
+        .eq("tool_id", selectedTool.id)
+        .order("serial_number", { ascending: true });
+      
+      if (fetchError) throw fetchError;
+  
+      let updatedSerialNumbers = existingSerialNumbers.map((sn: any) => sn.serial_number);
+  
+      // Handle quantity changes
+      if (selectedTool.quantity !== updatedSerialNumbers.length) {
+        if (selectedTool.quantity > updatedSerialNumbers.length) {
+          // Generate new serial numbers for increased quantity
+          const additionalQuantity = selectedTool.quantity - updatedSerialNumbers.length;
+          const lastSerial = updatedSerialNumbers[updatedSerialNumbers.length - 1];
+          const [prefix, randomPart, lastNum] = lastSerial.split(/(...-)(\d+)/);
+          let lastNumber = parseInt(lastNum, 10);
+  
+          for (let i = 1; i <= additionalQuantity; i++) {
+            const numberPart = (lastNumber + i).toString().padStart(3, "0");
+            updatedSerialNumbers.push(`${prefix}${randomPart}-${numberPart}`);
+          }
+        } else {
+          // Decrease quantity by truncating the serial numbers list
+          updatedSerialNumbers = updatedSerialNumbers.slice(0, selectedTool.quantity);
+        }
+      }
+  
+      // Update the tool in supabase
       const { error: toolError } = await supabase
         .from("tools")
         .update({
@@ -258,23 +289,18 @@ export function ToolsRecordTable() {
         })
         .eq("id", selectedTool.id);
       if (toolError) throw toolError;
-      const { data: existingSerialNumbers, error: fetchError } = await supabase
-        .from("tool_serial_numbers")
-        .select("id, serial_number")
-        .eq("tool_id", selectedTool.id);
-      if (fetchError) throw fetchError;
+  
+      // Find differences between existing and updated serial numbers
       const existingMap = new Map(
         existingSerialNumbers.map((sn: any) => [sn.serial_number, sn.id])
       );
-      const newSerialNumbers = selectedTool.serial_numbers.filter(
-        (sn) => !existingMap.has(sn)
-      );
+  
+      // Find serial numbers to delete
       const toDelete = existingSerialNumbers
-        .filter(
-          (existing: any) =>
-            !selectedTool.serial_numbers.includes(existing.serial_number)
-        )
+        .filter((existing: any) => !updatedSerialNumbers.includes(existing.serial_number))
         .map((sn: any) => sn.id);
+  
+      // Delete removed serial numbers
       if (toDelete.length > 0) {
         const { error: deleteError } = await supabase
           .from("tool_serial_numbers")
@@ -282,6 +308,13 @@ export function ToolsRecordTable() {
           .in("id", toDelete);
         if (deleteError) throw deleteError;
       }
+  
+      // Find new serial numbers to add
+      const newSerialNumbers = updatedSerialNumbers.filter(
+        (sn) => !existingMap.has(sn)
+      );
+  
+      // Add new serial numbers
       if (newSerialNumbers.length > 0) {
         const serialNumbersToInsert = newSerialNumbers.map((serialNumber) => ({
           tool_id: selectedTool.id,
@@ -293,17 +326,34 @@ export function ToolsRecordTable() {
           .insert(serialNumbersToInsert);
         if (insertError) throw insertError;
       }
-      const { error: updateError } = await supabase
+  
+      // Update status of remaining serial numbers
+      let query = supabase
         .from("tool_serial_numbers")
         .update({ status: selectedTool.status })
-        .eq("tool_id", selectedTool.id)
-        .not("id", "in", toDelete);
+        .eq("tool_id", selectedTool.id);
+  
+      if (toDelete.length > 0) {
+        query = query.not("id", "in", `(${toDelete.join(",")})`);
+      }
+  
+      const { error: updateError } = await query;
       if (updateError) throw updateError;
+  
+      // Update UI state
+      setTools(prevTools => prevTools.map(tool => 
+        tool.id === selectedTool.id ? 
+        { ...selectedTool, serial_numbers: updatedSerialNumbers } : 
+        tool
+      ));
+  
+      // Refresh from database
       const { data: updatedTools, error: refreshError } = await supabase
         .from("tools")
         .select(`*, tool_serial_numbers(*)`)
         .order("created_at", { ascending: false });
       if (refreshError) throw refreshError;
+  
       const formattedTools = updatedTools.map((tool: any) => ({
         id: tool.id,
         name: tool.name,
@@ -311,16 +361,12 @@ export function ToolsRecordTable() {
         status: tool.status,
         condition_notes: tool.condition_notes || "",
         last_maintenance: tool.last_maintenance,
-        serial_numbers: tool.tool_serial_numbers.map(
-          (sn: any) => sn.serial_number
-        ),
+        serial_numbers: tool.tool_serial_numbers.map((sn: any) => sn.serial_number),
       }));
+  
       setTools(formattedTools);
       setIsEditingTool(false);
-      toast({
-        title: "Success",
-        description: "Tool information updated",
-      });
+      toast({ title: "Success", description: "Tool information updated" });
     } catch (error) {
       console.error("Error updating tool:", error);
       toast({
