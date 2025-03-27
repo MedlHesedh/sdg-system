@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/breadcrumb";
 
 export default async function ProjectDetailsPage(props: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await Promise.resolve(props.params);
+  const { id } = await props.params;
   const supabase = createServerSupabaseClient();
   const { data: project, error } = await supabase
     .from("projects")
