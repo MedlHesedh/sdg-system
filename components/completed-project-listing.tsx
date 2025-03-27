@@ -16,11 +16,11 @@ interface SupabaseDevImage {
 interface SupabaseDevProject {
   id: string;
   title: string;
-  budget: number;
+  budget?: number;
   type: string;
   status: string;
-  start_date: string;
-  target_date: string;
+  start_date?: string;
+  target_date?: string;
   street: string | null;
   city: string | null;
   state: string | null;

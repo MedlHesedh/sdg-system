@@ -81,29 +81,29 @@ export default function MaterialRecordPage() {
       <div className="container mx-auto py-10">
         {loading ? (
           <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {columns.map((col) => (
-                    <TableHead key={col.id}>
-                      <Skeleton className="h-6 w-24" />
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array.from({ length: 3 }).map((_, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    {columns.map((_, colIndex) => (
-                      <TableCell key={colIndex}>
-                        <Skeleton className="h-4 w-full" />
-                      </TableCell>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {columns.map((col, colIndex) => (
+                        <TableHead key={col.id || `col-${colIndex}`}>
+                          <Skeleton className="h-6 w-24" />
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 3 }).map((_, rowIndex) => (
+                      <TableRow key={rowIndex}>
+                        {columns.map((_, colIndex) => (
+                          <TableCell key={colIndex}>
+                            <Skeleton className="h-4 w-full" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
                     ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                  </TableBody>
+                </Table>
+              </div>
         ) : (
           <DataTable
             columns={columns}
