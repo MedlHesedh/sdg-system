@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,7 +71,14 @@ const getFormSchema = (minBudget: number) =>
 
 type FormData = z.infer<ReturnType<typeof getFormSchema>>;
 
-export default function AddNewListing() {
+// Create a separate component to handle searchParams
+function SearchParamsProvider({ children }: { children: React.ReactNode }) {
+  const searchParams = useSearchParams();
+  return children;
+}
+
+// Create the main content component
+function AddNewListingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const projectId = searchParams.get("projectId");
@@ -744,5 +751,16 @@ export default function AddNewListing() {
         </form>
       </Form>
     </SidebarInset>
+  );
+}
+
+// Default export with Suspense
+export default function AddNewListing() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchParamsProvider>
+        <AddNewListingContent />
+      </SearchParamsProvider>
+    </Suspense>
   );
 }
